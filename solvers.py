@@ -79,53 +79,128 @@ def rk4(f, x0, y0, h, x_final):
         y_valores.append(y_actual)
     return x_valores, y_valores
 
-def multipasos(f, x0, y0, h, x_final):
-    x_actual = x0
-    y_actual = y0
 
-    # Almacenar los resultados
+def adams_bashforth_moulton(f, x0, y0, h, x_final):
+    """
+    Método Multipasos de Adams-Bashforth-Moulton de orden 4
+    
+    Este es un método PREDICTOR-CORRECTOR que combina:
+    - Adams-Bashforth (predictor): método explícito
+    - Adams-Moulton (corrector): método implícito
+    
+    Parámetros:
+    -----------
+    f : función
+        La derivada dy/dx = f(x, y)
+    x0, y0 : float
+        Condición inicial y(x0) = y0
+    h : float
+        Tamaño del paso
+    x_final : float
+        Valor final de x donde queremos llegar
+    
+    Retorna:
+    --------
+    x_valores, y_valores : listas
+        Los valores de x y y en cada paso
+    
+    CÓMO FUNCIONA:
+    --------------
+    1. INICIALIZACIÓN (con RK4):
+       Necesitamos 4 valores iniciales: y₀, y₁, y₂, y₃
+       Usamos RK4 para calcular y₁, y₂, y₃ con alta precisión
+    
+    2. PASO PREDICTOR (Adams-Bashforth de 4 pasos):
+       Usa los últimos 4 valores conocidos para PREDECIR el siguiente
+       
+       y_{n+1}^P = y_n + (h/24)[55f_n - 59f_{n-1} + 37f_{n-2} - 9f_{n-3}]
+       
+       Los coeficientes (55, -59, 37, -9) vienen de interpolación polinomial
+    
+    3. PASO CORRECTOR (Adams-Moulton de 3 pasos):
+       Usa la predicción para CORREGIR y obtener un valor más preciso
+       
+       y_{n+1}^C = y_n + (h/24)[9f_{n+1}^P + 19f_n - 5f_{n-1} + f_{n-2}]
+       
+       Los coeficientes (9, 19, -5, 1) también vienen de interpolación
+    
+    4. ITERACIÓN:
+       Repetimos predictor-corrector hasta llegar a x_final
+    """
+    
+    # ========== FASE 1: INICIALIZACIÓN CON RK4 ==========
+    # Necesitamos 4 puntos para comenzar el método multipasos
+    print("🔧 Inicializando con RK4 para obtener y₁, y₂, y₃...")
+    
     x_valores = [x0]
     y_valores = [y0]
-    y_rk4 = []
-
-    for i in range(4):
-        # Llamar a rk4 para UN SOLO PASO (x_final = x_actual + h)
-        x_temp, y_temp = rk4(f, x_actual, y_actual, h, x_actual + h)
-        # rk4 retorna listas, tomar el último valor
-        x_siguiente = x_temp[-1]
-        y_siguiente = y_temp[-1]
-
-        y_rk4.append(y_siguiente)
-
-        if(i == 3):
-            break
-
-        # Guardar
+    
+    # Calcular los primeros 3 valores con RK4
+    # Solo necesitamos llegar hasta x0 + 3h
+    x_init = x0
+    y_init = y0
+    
+    for i in range(3):
+        # Aplicar un paso de RK4
+        k1 = f(x_init, y_init)
+        k2 = f(x_init + h/2, y_init + h/2 * k1)
+        k3 = f(x_init + h/2, y_init + h/2 * k2)
+        k4 = f(x_init + h, y_init + h * k3)
+        
+        y_siguiente = y_init + h/6 * (k1 + 2*k2 + 2*k3 + k4)
+        x_siguiente = x_init + h
+        
         x_valores.append(x_siguiente)
         y_valores.append(y_siguiente)
-        x_actual = x_siguiente
-        y_actual = y_siguiente
-
-    f_hist = [f(x_valores[i], y_valores[i]) for i in range(4)]
+        
+        x_init = x_siguiente
+        y_init = y_siguiente
     
-    # Bucle principal: Predictor-Corrector
-    while x_actual < x_final:
-        # Predictor: Adams-Bashforth
-        y_pred = y_actual + (h/24) * (55*f_hist[3] - 59*f_hist[2] + 37*f_hist[1] - 9*f_hist[0])
-        x_siguiente = x_actual + h
-        f_pred = f(x_siguiente, y_pred)
-        # Corrector: Adams-Moulton
-        y_corr = y_actual + (h/24) * (9*f_pred + 19*f_hist[3] - 5*f_hist[2] + f_hist[1])
+    # ========== FASE 2: MÉTODO MULTIPASOS ABM ==========
+    print("🚀 Aplicando Adams-Bashforth-Moulton...")
+    
+    # Necesitamos mantener los últimos 4 valores de f(x,y)
+    # Calculamos f para los 4 primeros puntos
+    f_valores = [f(x_valores[i], y_valores[i]) for i in range(4)]
+    
+    x_actual = x_valores[-1]  # Último x calculado con RK4
+    
+    # Continuar desde x₃ hasta x_final
+    while x_actual < x_final - h/2:  # Pequeña tolerancia para errores de redondeo
+        # --- PASO PREDICTOR (Adams-Bashforth de 4 pasos) ---
+        # Fórmula: y_{n+1}^P = y_n + (h/24)[55f_n - 59f_{n-1} + 37f_{n-2} - 9f_{n-3}]
         
-        # Guardar y actualizar
+        y_predicho = y_valores[-1] + (h/24) * (
+            55 * f_valores[-1]   # f_n (más reciente)
+            - 59 * f_valores[-2]  # f_{n-1}
+            + 37 * f_valores[-3]  # f_{n-2}
+            - 9 * f_valores[-4]   # f_{n-3}
+        )
+        
+        x_siguiente = x_actual + h
+        
+        # Calcular f en el punto predicho
+        f_predicho = f(x_siguiente, y_predicho)
+        
+        # --- PASO CORRECTOR (Adams-Moulton de 3 pasos) ---
+        # Fórmula: y_{n+1}^C = y_n + (h/24)[9f_{n+1}^P + 19f_n - 5f_{n-1} + f_{n-2}]
+        
+        y_corregido = y_valores[-1] + (h/24) * (
+            9 * f_predicho        # f_{n+1} usando y predicho
+            + 19 * f_valores[-1]  # f_n
+            - 5 * f_valores[-2]   # f_{n-1}
+            + f_valores[-3]       # f_{n-2}
+        )
+        
+        # Guardar los nuevos valores
         x_valores.append(x_siguiente)
-        y_valores.append(y_corr)
+        y_valores.append(y_corregido)
+        
+        # Actualizar f_valores: eliminar el más antiguo y agregar el nuevo
+        f_nuevo = f(x_siguiente, y_corregido)
+        f_valores.pop(0)  # Eliminar f_{n-3}
+        f_valores.append(f_nuevo)  # Agregar f_{n+1}
         
         x_actual = x_siguiente
-        y_actual = y_corr
-        
-        # Actualizar historial
-        f_hist.pop(0)
-        f_hist.append(f(x_actual, y_actual))
-    print(f"Valores RK4 iniciales para h={h}: {y_rk4} para x = {[round(x,4) for x in x_valores[:4]]} y para y = {[round(y,4) for y in y_valores[:4]]}")
-    return x_valores, y_valores, y_rk4
+    
+    return x_valores, y_valores
