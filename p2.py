@@ -91,7 +91,7 @@ def main():
         # Imprimir resultados con resumen estadístico
         imprimir_tabla(tabla, h)
     
-    print(f"\n🎉 ¡Análisis completado!")
+    print("\n🎉 ¡Análisis completado!")
 
 if __name__ == "__main__":
     main()
