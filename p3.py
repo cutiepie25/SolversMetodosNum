@@ -147,9 +147,9 @@ def main():
     """
     print("🔬 MÉTODO ADAMS-BASHFORTH-MOULTON")
     print("="*60)
-    print(f"Problema: y' = 2x - 3y + 1, y(0) = 1")
-    print(f"Objetivo: Aproximar y(0.8) con h = 0.2")
-    print(f"Método: ABM de orden 4 (inicialización con RK4)")
+    print("Problema: y' = 2x - 3y + 1, y(0) = 1")
+    print("Objetivo: Aproximar y(0.8) con h = 0.2")
+    print("Método: ABM de orden 4 (inicialización con RK4)")
     print("="*60)
     
     # ========== PASO 1: Calcular solo con RK4 para comparación ==========

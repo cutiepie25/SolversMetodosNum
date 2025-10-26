@@ -108,7 +108,7 @@ def adams_bashforth_moulton(f, x0, y0, h, x_final):
     --------------
     1. INICIALIZACIÓN (con RK4):
        Necesitamos 4 valores iniciales: y₀, y₁, y₂, y₃
-       Usamos RK4 para calcular y₁, y₂, y₃ con alta precisión
+       Usamos el método RK4 existente para calcular y₁, y₂, y₃ con alta precisión
     
     2. PASO PREDICTOR (Adams-Bashforth de 4 pasos):
        Usa los últimos 4 valores conocidos para PREDECIR el siguiente
@@ -130,31 +130,11 @@ def adams_bashforth_moulton(f, x0, y0, h, x_final):
     
     # ========== FASE 1: INICIALIZACIÓN CON RK4 ==========
     # Necesitamos 4 puntos para comenzar el método multipasos
+    # Reutilizamos el método rk4() que ya tenemos implementado
     print("🔧 Inicializando con RK4 para obtener y₁, y₂, y₃...")
     
-    x_valores = [x0]
-    y_valores = [y0]
-    
-    # Calcular los primeros 3 valores con RK4
-    # Solo necesitamos llegar hasta x0 + 3h
-    x_init = x0
-    y_init = y0
-    
-    for i in range(3):
-        # Aplicar un paso de RK4
-        k1 = f(x_init, y_init)
-        k2 = f(x_init + h/2, y_init + h/2 * k1)
-        k3 = f(x_init + h/2, y_init + h/2 * k2)
-        k4 = f(x_init + h, y_init + h * k3)
-        
-        y_siguiente = y_init + h/6 * (k1 + 2*k2 + 2*k3 + k4)
-        x_siguiente = x_init + h
-        
-        x_valores.append(x_siguiente)
-        y_valores.append(y_siguiente)
-        
-        x_init = x_siguiente
-        y_init = y_siguiente
+    # Calcular hasta x0 + 3h para obtener los primeros 4 puntos (y₀, y₁, y₂, y₃)
+    x_valores, y_valores = rk4(f, x0, y0, h, x0 + 3*h)
     
     # ========== FASE 2: MÉTODO MULTIPASOS ABM ==========
     print("🚀 Aplicando Adams-Bashforth-Moulton...")
