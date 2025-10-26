@@ -59,6 +59,7 @@ def rk4(f, x0, y0, h, x_final):
 
         #Cálculos con K2
 
+        
         y_asterisco = y_actual + h/2 * k1
         k2 = f(x_actual + h/2,y_asterisco)
 
@@ -81,74 +82,17 @@ def rk4(f, x0, y0, h, x_final):
 
 
 def adams_bashforth_moulton(f, x0, y0, h, x_final):
-    """
-    Método Multipasos de Adams-Bashforth-Moulton de orden 4
+    # Inicialización con RK4 para obtener y0, y1, y2, y3
     
-    Este es un método PREDICTOR-CORRECTOR que combina:
-    - Adams-Bashforth (predictor): método explícito
-    - Adams-Moulton (corrector): método implícito
-    
-    Parámetros:
-    -----------
-    f : función
-        La derivada dy/dx = f(x, y)
-    x0, y0 : float
-        Condición inicial y(x0) = y0
-    h : float
-        Tamaño del paso
-    x_final : float
-        Valor final de x donde queremos llegar
-    
-    Retorna:
-    --------
-    x_valores, y_valores : listas
-        Los valores de x y y en cada paso
-    
-    CÓMO FUNCIONA:
-    --------------
-    1. INICIALIZACIÓN (con RK4):
-       Necesitamos 4 valores iniciales: y₀, y₁, y₂, y₃
-       Usamos el método RK4 existente para calcular y₁, y₂, y₃ con alta precisión
-    
-    2. PASO PREDICTOR (Adams-Bashforth de 4 pasos):
-       Usa los últimos 4 valores conocidos para PREDECIR el siguiente
-       
-       y_{n+1}^P = y_n + (h/24)[55f_n - 59f_{n-1} + 37f_{n-2} - 9f_{n-3}]
-       
-       Los coeficientes (55, -59, 37, -9) vienen de interpolación polinomial
-    
-    3. PASO CORRECTOR (Adams-Moulton de 3 pasos):
-       Usa la predicción para CORREGIR y obtener un valor más preciso
-       
-       y_{n+1}^C = y_n + (h/24)[9f_{n+1}^P + 19f_n - 5f_{n-1} + f_{n-2}]
-       
-       Los coeficientes (9, 19, -5, 1) también vienen de interpolación
-    
-    4. ITERACIÓN:
-       Repetimos predictor-corrector hasta llegar a x_final
-    """
-    
-    # ========== FASE 1: INICIALIZACIÓN CON RK4 ==========
-    # Necesitamos 4 puntos para comenzar el método multipasos
-    # Reutilizamos el método rk4() que ya tenemos implementado
-    print("🔧 Inicializando con RK4 para obtener y₁, y₂, y₃...")
-    
-    # Calcular hasta x0 + 3h para obtener los primeros 4 puntos (y₀, y₁, y₂, y₃)
     x_valores, y_valores = rk4(f, x0, y0, h, x0 + 3*h)
     
-    # ========== FASE 2: MÉTODO MULTIPASOS ABM ==========
-    print("🚀 Aplicando Adams-Bashforth-Moulton...")
-    
-    # Necesitamos mantener los últimos 4 valores de f(x,y)
-    # Calculamos f para los 4 primeros puntos
+   
     f_valores = [f(x_valores[i], y_valores[i]) for i in range(4)]
     
     x_actual = x_valores[-1]  # Último x calculado con RK4
     
     # Continuar desde x₃ hasta x_final
-    while x_actual < x_final - h/2:  # Pequeña tolerancia para errores de redondeo
-        # --- PASO PREDICTOR (Adams-Bashforth de 4 pasos) ---
-        # Fórmula: y_{n+1}^P = y_n + (h/24)[55f_n - 59f_{n-1} + 37f_{n-2} - 9f_{n-3}]
+    while x_actual < x_final - h/2:
         
         y_predicho = y_valores[-1] + (h/24) * (
             55 * f_valores[-1]   # f_n (más reciente)
@@ -162,7 +106,6 @@ def adams_bashforth_moulton(f, x0, y0, h, x_final):
         # Calcular f en el punto predicho
         f_predicho = f(x_siguiente, y_predicho)
         
-        # --- PASO CORRECTOR (Adams-Moulton de 3 pasos) ---
         # Fórmula: y_{n+1}^C = y_n + (h/24)[9f_{n+1}^P + 19f_n - 5f_{n-1} + f_{n-2}]
         
         y_corregido = y_valores[-1] + (h/24) * (

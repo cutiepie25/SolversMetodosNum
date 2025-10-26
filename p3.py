@@ -34,8 +34,7 @@ def y_analitica(x: float) -> float:
     
     Esta solución se obtiene resolviendo la EDO lineal de primer orden.
     """
-    return (2/3)*x - (7/9) + (16/9)*math.exp(-3*x)
-
+    return (2/3)*x + (1/9) + (8/9)*math.exp(-3*x)
 
 # ============================================
 # FUNCIONES DE PRESENTACIÓN
@@ -99,53 +98,12 @@ def imprimir_resultado_final(x_vals, y_vals):
     print("="*60)
 
 
-def imprimir_explicacion():
-    """
-    Imprime una explicación del método
-    """
-    print("\n" + "="*70)
-    print("📚 EXPLICACIÓN DEL MÉTODO ADAMS-BASHFORTH-MOULTON")
-    print("="*70)
-    print("""
-El método ABM es un método PREDICTOR-CORRECTOR que funciona en dos fases:
-
-1️⃣  INICIALIZACIÓN (usando RK4):
-   • El método multipasos necesita 4 valores previos para comenzar
-   • Usamos RK4 para calcular y₁, y₂, y₃ con alta precisión
-   • Estos valores sirven como "historial" para el método
-
-2️⃣  FASE MULTIPASOS (ABM):
-   
-   🔮 PREDICTOR (Adams-Bashforth):
-      Usa una extrapolación de los últimos 4 puntos:
-      y_{n+1}^P = y_n + (h/24)[55f_n - 59f_{n-1} + 37f_{n-2} - 9f_{n-3}]
-   
-   ✅ CORRECTOR (Adams-Moulton):
-      Refina la predicción usando el valor predicho:
-      y_{n+1}^C = y_n + (h/24)[9f_{n+1}^P + 19f_n - 5f_{n-1} + f_{n-2}]
-
-VENTAJAS:
-• Mayor precisión que métodos de un solo paso
-• Reutiliza información de pasos anteriores
-• Eficiente computacionalmente (pocas evaluaciones de f)
-
-DESVENTAJAS:
-• Necesita inicialización con otro método
-• No es auto-iniciante
-• Requiere paso h constante
-""")
-    print("="*70)
-
-
-# ============================================
-# FUNCIÓN PRINCIPAL
-# ============================================
 
 def main():
     """
     Función principal que ejecuta el método ABM
     """
-    print("🔬 MÉTODO ADAMS-BASHFORTH-MOULTON")
+    print("MÉTODO ADAMS-BASHFORTH-MOULTON")
     print("="*60)
     print("Problema: y' = 2x - 3y + 1, y(0) = 1")
     print("Objetivo: Aproximar y(0.8) con h = 0.2")
@@ -153,7 +111,7 @@ def main():
     print("="*60)
     
     # ========== PASO 1: Calcular solo con RK4 para comparación ==========
-    print("\n📍 PASO 1: Calculando valores iniciales con RK4...")
+    print("\n PASO 1: Calculando valores iniciales con RK4...")
     x_rk4, y_rk4 = rk4(f, x0, y0, h, x0 + 3*h)  # Solo hasta y₃
     imprimir_tabla_rk4(x_rk4, y_rk4)
     
@@ -165,8 +123,6 @@ def main():
     imprimir_tabla_completa(x_abm, y_abm)
     imprimir_resultado_final(x_abm, y_abm)
     
-    # ========== PASO 4: Mostrar explicación ==========
-    imprimir_explicacion()
     
     print("\n🎉 ¡Análisis completado!")
     print(f"\n💡 Respuesta final: y(0.8) ≈ {y_abm[-1]:.4f}")
