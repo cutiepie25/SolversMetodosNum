@@ -254,7 +254,7 @@ def rk4_sistema(f_sistema, t0, y0_vector, h, t_final):
         y_actual = y_siguiente
         
         # Guardar resultados
-        t_valores.append(t_actual)
+        t_valores.append(round(t_actual, 3))
         y_valores.append(y_actual[:])
     
     return t_valores, y_valores

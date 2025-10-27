@@ -160,14 +160,14 @@ def main():
     print("=" * 70)
     print("🌍🌙 SIMULACIÓN: PÉNDULO EN LA TIERRA VS LUNA")
     print("=" * 70)
-    print(f"\nParámetros del péndulo:")
+    print("\nParámetros del péndulo:")
     print(f"  • Longitud: l = {L} m")
     print(f"  • Ángulo inicial: θ(0) = {THETA_0} rad ({math.degrees(THETA_0):.1f}°)")
     print(f"  • Velocidad inicial: θ'(0) = {OMEGA_0} rad/s")
-    print(f"\nAceleraciones:")
+    print("\nAceleraciones:")
     print(f"  • Tierra: g = {G_TIERRA} m/s²")
     print(f"  • Luna:   g = {G_LUNA:.2f} m/s² (0.165 × g_Tierra)")
-    print(f"\nMétodo numérico: RK4 para sistemas")
+    print("\nMétodo numérico: RK4 para sistemas")
     print(f"Paso de integración: h = {H} s")
     print(f"Tiempo de simulación: [0, {T_FINAL}] s")
     print("=" * 70)
@@ -207,20 +207,20 @@ def main():
     amp_luna = calcular_amplitud(theta_luna)
     
     # Mostrar resultados
-    print(f"\n🌍 TIERRA:")
+    print("\n🌍 TIERRA:")
     if periodo_tierra:
         print(f"  • Periodo aproximado: T ≈ {periodo_tierra:.3f} s")
         print(f"  • Frecuencia: f ≈ {1/periodo_tierra:.3f} Hz")
     print(f"  • Amplitud máxima: {amp_tierra:.3f} rad ({math.degrees(amp_tierra):.1f}°)")
     
-    print(f"\n🌙 LUNA:")
+    print("\n🌙 LUNA:")
     if periodo_luna:
         print(f"  • Periodo aproximado: T ≈ {periodo_luna:.3f} s")
         print(f"  • Frecuencia: f ≈ {1/periodo_luna:.3f} Hz")
     print(f"  • Amplitud máxima: {amp_luna:.3f} rad ({math.degrees(amp_luna):.1f}°)")
     
     # Comparación
-    print(f"\n📈 COMPARACIÓN:")
+    print("\n📈 COMPARACIÓN:")
     if periodo_tierra and periodo_luna:
         ratio_periodo = periodo_luna / periodo_tierra
         print(f"  • El péndulo en la Luna oscila {ratio_periodo:.2f}× más lento")
@@ -230,7 +230,7 @@ def main():
     print(f"  • Amplitud Luna / Amplitud Tierra = {ratio_amp:.3f}")
     
     # Conclusiones
-    print(f"\n🎯 CONCLUSIONES:")
+    print("\n🎯 CONCLUSIONES:")
     print(f"  • ¿Cuál oscila más rápido? → {'TIERRA' if periodo_tierra and periodo_luna and periodo_tierra < periodo_luna else 'LUNA'}")
     print(f"  • ¿Cuál tiene mayor amplitud? → {'TIERRA' if amp_tierra > amp_luna else 'LUNA'}")
     print("=" * 70)
